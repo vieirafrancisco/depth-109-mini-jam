@@ -1,4 +1,4 @@
-WIDTH, HEIGHT = 480, 640
+WIDTH, HEIGHT = 840, 640
 FPS = 60
 
 BLACK = (0, 0, 0)
@@ -7,3 +7,4 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PINK = (255, 0, 255)
+YELLOW = (255,255,0)

@@ -11,12 +11,9 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((32, 32))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.rect.x = WIDTH//2 - 16
-        self.rect.y = HEIGHT//2 - 16
-        self.pos = pygame.Vector2(self.rect.x, self.rect.y)
-        self.gravity = pygame.Vector2(0, 5)
+        self.pos = pygame.Vector2(WIDTH//2 - 16, 0)
+        self.rect.topleft = self.pos
         self.velocity = pygame.Vector2(0, 0)
-        self.is_jumping = False
     
     def update(self):
         keys = pygame.key.get_pressed()
@@ -26,13 +23,31 @@ class Player(pygame.sprite.Sprite):
             self.velocity.x = -5
         if keys[K_RIGHT] or keys[K_d]:
             self.velocity.x = 5
-        if (keys[K_UP] or keys[K_w]):
-            self.velocity.y = -10
         
-        if self.rect.y + 5 <= HEIGHT - 32:
-            self.velocity += self.gravity
-        else:
-            self.pos.y = HEIGHT - 32
+        self.pos += self.velocity
+
+        if self.pos.x < 0:
+            self.pos.x = 0
+        if self.pos.x > WIDTH - 32:
+            self.pos.x = WIDTH - 32
+
+        self.rect.topleft = self.pos
+
+
+class Fish(pygame.sprite.Sprite):
+    def __init__(self, game):
+        groups = [game.all_sprites, game.fishs]
+        super().__init__(groups)
+        self.image = pygame.Surface((16, 16))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.pos = pygame.Vector2(game.player.pos.x+8, 0)
+        self.rect.topleft = self.pos
+        self.velocity = pygame.Vector2(0, 5)
+    
+    def update(self):
+        if self.pos.y > HEIGHT:
+            self.kill()
         
         self.pos += self.velocity
         self.rect.topleft = self.pos

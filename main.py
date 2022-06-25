@@ -1,7 +1,16 @@
 import pygame
 
-from settings import WIDTH, HEIGHT, BLACK, WHITE, FPS
-from sprites import Player
+from settings import GREEN, RED, WIDTH, HEIGHT, BLACK, WHITE, FPS, YELLOW
+from sprites import Fish, Player
+
+
+def HUD(game):
+    # shooting cooldown
+    pygame.draw.rect(game.display, BLACK, (WIDTH - 50, 25, 25, 150), width=2)
+    if not game.is_shooting:
+        pygame.draw.rect(game.display, WHITE, (WIDTH - 50, 25, 25, 150))
+    else:
+        pygame.draw.rect(game.display, WHITE, (WIDTH - 50, 25, 25, 150 * min(game.cooldown, 1)))
 
 
 class Game:
@@ -19,8 +28,11 @@ class Game:
 
         # groups
         self.all_sprites = pygame.sprite.Group()
+        self.fishs = pygame.sprite.Group()
 
         self.player = Player(self)
+        self.cooldown = 0
+        self.is_shooting = False
 
     def cleanup(self) -> None:
         pygame.font.quit()
@@ -46,8 +58,26 @@ class Game:
         pygame.display.set_caption(f"Depth - FPS: {round(self.clock.get_fps(), 2)}")
         self.all_sprites.draw(self.display)
 
+        HUD(self)
+
     def update(self) -> None:
         self.player.update()
+
+        for sprite in self.fishs:
+            sprite.update()
+
+        has_mouse_click = pygame.mouse.get_pressed()[0]
+        if not self.is_shooting and has_mouse_click:
+            Fish(self)
+            self.is_shooting = True
+        
+        # shooting cooldown
+        if self.is_shooting:
+            self.cooldown += self.dt
+        
+        if self.cooldown >= 1:
+            self.cooldown = 0
+            self.is_shooting = False
 
 if __name__ == "__main__":
     game = Game()
