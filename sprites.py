@@ -52,3 +52,14 @@ class Fish(pygame.sprite.Sprite):
         
         self.pos += self.velocity
         self.rect.topleft = self.pos
+
+
+class Mob(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+        groups = [game.all_sprites, game.mobs]
+        super().__init__(groups)
+        self.image = pygame.Surface((32, 32))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.pos = pygame.Vector2(x, y)
+        self.rect.topleft = self.pos

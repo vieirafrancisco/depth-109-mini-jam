@@ -3,7 +3,7 @@ import random
 import pygame
 
 from settings import GREEN, RED, WIDTH, HEIGHT, BLACK, WHITE, FPS, YELLOW
-from sprites import Fish, Player
+from sprites import Fish, Mob, Player
 
 
 def HUD(game):
@@ -20,28 +20,42 @@ class Game:
         self.display = None
         self.is_running = False
         self.clock = pygame.time.Clock()
+        self.total_levels = 10
+        self.level = 1
 
-    def start(self) -> None:
+    def new(self) -> None:
         pygame.init()
         pygame.font.init()
 
         self.display = pygame.display.set_mode((WIDTH, HEIGHT))
         self.is_running = True
 
-        # groups
-        self.all_sprites = pygame.sprite.Group()
-        self.fishs = pygame.sprite.Group()
+        self.start_level()
+    
+    def start_level(self):
+        if self.level <= self.total_levels:
+            # groups
+            self.all_sprites = pygame.sprite.Group()
+            self.fishs = pygame.sprite.Group()
+            self.mobs = pygame.sprite.Group()
 
-        self.player = Player(self)
-        self.cooldown = 0
-        self.is_shooting = False
+            # setup
+            self.player = Player(self)
+            self.cooldown = 0
+            self.is_shooting = False
+
+            Mob(self, 150, 300)
+            Mob(self, 55, 180)
+
+    def game_over(self):
+        pass
 
     def cleanup(self) -> None:
         pygame.font.quit()
         pygame.quit()
 
     def execute(self) -> None:
-        self.start()
+        self.new()
         while self.is_running:
             for event in pygame.event.get():
                 self.handle_event(event)
@@ -85,6 +99,11 @@ class Game:
         if self.cooldown >= 1:
             self.cooldown = 0
             self.is_shooting = False
+        
+        # collision
+        hits = pygame.sprite.groupcollide(self.fishs, self.mobs, True, False)
+        if hits:
+            print(hits)
 
 if __name__ == "__main__":
     game = Game()
