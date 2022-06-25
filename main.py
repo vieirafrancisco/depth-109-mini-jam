@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 from settings import GREEN, RED, WIDTH, HEIGHT, BLACK, WHITE, FPS, YELLOW
@@ -6,11 +8,11 @@ from sprites import Fish, Player
 
 def HUD(game):
     # shooting cooldown
-    pygame.draw.rect(game.display, BLACK, (WIDTH - 50, 25, 25, 150), width=2)
     if not game.is_shooting:
         pygame.draw.rect(game.display, WHITE, (WIDTH - 50, 25, 25, 150))
     else:
         pygame.draw.rect(game.display, WHITE, (WIDTH - 50, 25, 25, 150 * min(game.cooldown, 1)))
+    pygame.draw.rect(game.display, BLACK, (WIDTH - 50, 25, 25, 150), width=2)
 
 
 class Game:
@@ -43,7 +45,7 @@ class Game:
         while self.is_running:
             for event in pygame.event.get():
                 self.handle_event(event)
-            self.display.fill(BLACK)
+            self.display.fill((156, 185, 247))
             self.render()
             self.update()
             pygame.display.flip()
@@ -57,6 +59,11 @@ class Game:
     def render(self) -> None:
         pygame.display.set_caption(f"Depth - FPS: {round(self.clock.get_fps(), 2)}")
         self.all_sprites.draw(self.display)
+
+        # sea
+        sea = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        sea.fill((51, 104, 220, 128))
+        self.display.blit(sea, (0, 125))
 
         HUD(self)
 
